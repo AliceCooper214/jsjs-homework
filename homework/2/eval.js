@@ -32,6 +32,12 @@ function evaluate(node, env) {
           return evaluate(node.left, env) || evaluate(node.right, env);
       }
     case "CallExpression":
+      if (node.callee.type === "FunctionExpression") {
+        // 处理第一个立即调用的函数表达式
+        const fn = evaluate(node.callee, env);
+        const arg = evaluate(node.arguments[0], env);
+        return fn(arg);
+      }
       const callee = evaluate(node.callee, env);
       const args = node.arguments.map((arg) => evaluate(arg, env));
       return callee(...args);
